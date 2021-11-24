@@ -1,7 +1,7 @@
 radio.onReceivedString(function (receivedString) {
     signal = radio.receivedPacket(RadioPacketProperty.SignalStrength)
     music.setVolume(Math.map(signal, -95, -42, 0, 250))
-    if (signal < -68.5 && signal >= -95) {
+    if (signal >= -95 && signal < -80) {
         stopGesture = 1
         if (stopSignal != 1) {
             basic.showLeds(`
@@ -11,9 +11,9 @@ radio.onReceivedString(function (receivedString) {
                 . . . . .
                 . . # . .
                 `)
+            basic.pause(100)
         }
-        music.playMelody("G B G E G A G - ", 250)
-    } else if (signal < -42 && signal >= -68.5) {
+    } else if (signal >= -80 && signal <= -42) {
         if (stopSignal != 1) {
             basic.showLeds(`
                 # . . . #
@@ -22,35 +22,39 @@ radio.onReceivedString(function (receivedString) {
                 . # . # .
                 # . . . #
                 `)
+            basic.pause(100)
         }
         music.playMelody("C5 - C5 - C5 - C5 - ", 300)
     } else {
         stopGesture = 0
     }
-    basic.pause(200)
+    basic.clearScreen()
+    basic.pause(100)
 })
 input.onLogoEvent(TouchButtonEvent.Pressed, function () {
-    temperature = input.temperature()
-    basic.showNumber(temperature)
+    temp = input.temperature()
+    basic.showNumber(temp)
 })
+let warning = 0
 let position: number[] = []
 let temperature = 0
+let temp = 0
 let stopSignal = 0
 let stopGesture = 0
 let signal = 0
-let warning = 0
-radio.setGroup(123)
-radio.setTransmitPower(2)
+let bodyTemp = 0
+radio.setGroup(145)
+radio.setTransmitPower(0.2)
 basic.forever(function () {
     radio.sendString("TOO CLOSE")
-    basic.pause(200)
+    basic.pause(100)
 })
 basic.forever(function () {
     temperature = input.temperature()
-    if (input.temperature() <= 18) {
+    if (input.temperature() <= 23) {
         stopSignal = 1
-        music.playMelody("A F E F D G E F ", 180)
-        basic.showString("BAD TEMP")
+        music.playMelody("G B A G C5 B A B ", 250)
+        basic.showString("BAD TEMP", 85)
     } else {
         stopSignal = 0
     }
@@ -59,7 +63,7 @@ basic.forever(function () {
     if (input.buttonIsPressed(Button.A)) {
         basic.showIcon(IconNames.Yes)
         position = []
-        for (let index = 0; index <= 5; index++) {
+        for (let index = 0; index <= 10; index++) {
             position.push(input.acceleration(Dimension.Y) + index)
             position.push(input.acceleration(Dimension.Y) - index)
         }
@@ -67,8 +71,10 @@ basic.forever(function () {
     if (input.buttonIsPressed(Button.B)) {
         if (warning == 0) {
             warning = 1
+            basic.showString("WARNING ON!", 80)
         } else {
             warning = 0
+            basic.showString("WARNING OFF!", 80)
         }
     }
     for (let value of position) {
@@ -77,6 +83,7 @@ basic.forever(function () {
                 pins.digitalWritePin(DigitalPin.P2, 1)
                 basic.pause(500)
             } else {
+                music.playMelody("G B A G C5 B A B ", 250)
                 basic.showIcon(IconNames.Angry)
             }
         } else {
