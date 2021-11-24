@@ -34,6 +34,8 @@ radio.onReceivedString(function (receivedString) {
 input.onLogoEvent(TouchButtonEvent.Pressed, function () {
     temp = input.temperature()
     basic.showNumber(temp)
+    bodyTemp = MLX90614.temperature(MLX90614_TEMPERATURE_ORIGIN.OBJECT)
+    basic.showNumber(bodyTemp)
 })
 let warning = 0
 let position: number[] = []
@@ -43,6 +45,7 @@ let stopSignal = 0
 let stopGesture = 0
 let signal = 0
 let bodyTemp = 0
+bodyTemp = 0
 radio.setGroup(145)
 radio.setTransmitPower(0.2)
 basic.forever(function () {
