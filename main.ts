@@ -32,20 +32,19 @@ radio.onReceivedString(function (receivedString) {
     basic.pause(100)
 })
 input.onLogoEvent(TouchButtonEvent.Pressed, function () {
-    temp = input.temperature()
-    basic.showNumber(temp)
-    bodyTemp = MLX90614.temperature(MLX90614_TEMPERATURE_ORIGIN.OBJECT)
-    basic.showNumber(bodyTemp)
+    room = input.temperature()
+    basic.showNumber(room)
+    body = MLX90614.temperature(MLX90614_TEMPERATURE_ORIGIN.OBJECT)
+    basic.showNumber(body)
 })
 let warning = 0
 let position: number[] = []
 let temperature = 0
-let temp = 0
+let body = 0
+let room = 0
 let stopSignal = 0
 let stopGesture = 0
 let signal = 0
-let bodyTemp = 0
-bodyTemp = 0
 radio.setGroup(145)
 radio.setTransmitPower(0.2)
 basic.forever(function () {
@@ -54,7 +53,7 @@ basic.forever(function () {
 })
 basic.forever(function () {
     temperature = input.temperature()
-    if (input.temperature() <= 23) {
+    if (input.temperature() <= 20) {
         stopSignal = 1
         music.playMelody("G B A G C5 B A B ", 250)
         basic.showString("BAD TEMP", 95)
@@ -83,14 +82,12 @@ basic.forever(function () {
     for (let value of position) {
         if (value == input.acceleration(Dimension.Y)) {
             if (warning == 0) {
-                pins.digitalWritePin(DigitalPin.P2, 1)
                 basic.pause(500)
             } else {
                 music.playMelody("G B A G C5 B A B ", 250)
                 basic.showIcon(IconNames.Angry)
             }
         } else {
-            pins.digitalWritePin(DigitalPin.P2, 0)
             basic.clearScreen()
         }
     }
