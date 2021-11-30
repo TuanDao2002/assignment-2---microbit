@@ -33,7 +33,7 @@ radio.onReceivedString(function (receivedString) {
 })
 input.onButtonPressed(Button.B, function () {
     if (warning == 0) {
-        music.playTone(262, music.beat(BeatFraction.Whole))
+        music.playTone(523, music.beat(BeatFraction.Whole))
         warning = 1
         gestureStatus = 1
         basic.showString("WARNING ON!", 90)
@@ -45,17 +45,16 @@ input.onButtonPressed(Button.B, function () {
     }
 })
 input.onLogoEvent(TouchButtonEvent.Pressed, function () {
-    bodyTemp = MLX90614.temperature(MLX90614_TEMPERATURE_ORIGIN.OBJECT)
-    basic.showString("BODY:", 90)
-basic.showNumber(bodyTemp)
-    temp = input.temperature()
-    basic.showString("ROOM:", 90)
+    temp = MLX90614.temperature(MLX90614_TEMPERATURE_ORIGIN.OBJECT)
+    basic.pause(500)
+    music.playMelody("C - E - G - B C5 ", 250)
+    basic.pause(200)
+    basic.showString("TEMP:", 90)
 basic.showNumber(temp)
 })
-let temperature = 0
 let position: number[] = []
+let temperature = 0
 let temp = 0
-let bodyTemp = 0
 let gestureStatus = 0
 let warning = 0
 let stopSignal = 0
@@ -63,6 +62,20 @@ let stopGesture = 0
 let signal = 0
 radio.setGroup(145)
 radio.setTransmitPower(0.2)
+basic.forever(function () {
+    radio.sendString("TOO CLOSE")
+    basic.pause(100)
+})
+basic.forever(function () {
+    temperature = input.temperature()
+    if (input.temperature() <= 24) {
+        stopSignal = 1
+        music.playMelody("G B A G C5 B A B ", 250)
+        basic.showString("BAD TEMP!", 90)
+    } else {
+        stopSignal = 0
+    }
+})
 basic.forever(function () {
     if (gestureStatus == 1 && stopGesture == 0) {
         if (input.buttonIsPressed(Button.A)) {
@@ -80,23 +93,10 @@ basic.forever(function () {
                     music.playMelody("G B A G C5 B A B ", 250)
                 }
                 basic.showIcon(IconNames.Angry)
-                basic.pause(200)
+                basic.pause(500)
+            } else {
                 basic.clearScreen()
             }
         }
-    }
-})
-basic.forever(function () {
-    radio.sendString("TOO CLOSE")
-    basic.pause(100)
-})
-basic.forever(function () {
-    temperature = input.temperature()
-    if (input.temperature() <= 24) {
-        stopSignal = 1
-        music.playMelody("G B A G C5 B A B ", 250)
-        basic.showString("BAD TEMP!", 90)
-    } else {
-        stopSignal = 0
     }
 })
