@@ -31,6 +31,19 @@ radio.onReceivedString(function (receivedString) {
     basic.clearScreen()
     basic.pause(100)
 })
+input.onButtonPressed(Button.B, function () {
+    if (warning == 0) {
+        music.playTone(262, music.beat(BeatFraction.Whole))
+        warning = 1
+        gestureStatus = 1
+        basic.showString("WARNING ON!", 90)
+    } else {
+        music.playTone(131, music.beat(BeatFraction.Whole))
+        warning = 0
+        gestureStatus = 0
+        basic.showString("WARNING OFF!", 90)
+    }
+})
 input.onLogoEvent(TouchButtonEvent.Pressed, function () {
     bodyTemp = MLX90614.temperature(MLX90614_TEMPERATURE_ORIGIN.OBJECT)
     basic.showString("BODY:", 90)
@@ -41,29 +54,16 @@ basic.showNumber(temp)
 })
 let temperature = 0
 let position: number[] = []
-let gestureStatus = 0
-let warning = 0
 let temp = 0
 let bodyTemp = 0
+let gestureStatus = 0
+let warning = 0
 let stopSignal = 0
 let stopGesture = 0
 let signal = 0
 radio.setGroup(145)
 radio.setTransmitPower(0.2)
 basic.forever(function () {
-    if (input.buttonIsPressed(Button.B)) {
-        if (warning == 0) {
-            music.playTone(262, music.beat(BeatFraction.Whole))
-            warning = 1
-            gestureStatus = 1
-            basic.showString("WARNING ON!", 90)
-        } else {
-            music.playTone(131, music.beat(BeatFraction.Whole))
-            warning = 0
-            gestureStatus = 0
-            basic.showString("WARNING OFF!", 90)
-        }
-    }
     if (gestureStatus == 1 && stopGesture == 0) {
         if (input.buttonIsPressed(Button.A)) {
             music.playTone(392, music.beat(BeatFraction.Whole))
