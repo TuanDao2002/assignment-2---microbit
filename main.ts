@@ -68,7 +68,7 @@ basic.forever(function () {
 })
 basic.forever(function () {
     temperature = input.temperature()
-    if (input.temperature() <= 24) {
+    if (input.temperature() <= 22) {
         stopSignal = 1
         music.playMelody("G B A G C5 B A B ", 250)
         basic.showString("BAD TEMP!", 90)
